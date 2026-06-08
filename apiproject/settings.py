@@ -21,6 +21,7 @@ DEBUG = config("DEBUG")
 
 ALLOWED_HOSTS = [
     'localhost',
+    '.onrender.com',
 ]
 
 
