@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG")
+DEBUG = config("DEBUG", cast=bool, default=False)
 
 ALLOWED_HOSTS = [
     'localhost',
@@ -79,20 +79,23 @@ WSGI_APPLICATION = 'apiproject.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
-    # 'default': {
-    #     'ENGINE': config('ENGINE'),
-    #     'NAME': config('NAME'),
-    #     'USER': config('USER'),
-    #     'PASSWORD': config('PASSWORD'),
-    #     'HOST': config('HOST'),
-    #     'PORT': config('PORT'),
-    # }
-    'default': dj_database_url.parse(config('DATABASE_URL'))
+if DEBUG:
+    DATABASES = {
+    'default': {
+        'ENGINE': config('ENGINE'),
+        'NAME': config('NAME'),
+        'USER': config('USER'),
+        'PASSWORD': config('PASSWORD'),
+        'HOST': config('HOST'),
+        'PORT': config('PORT'),
+    }
+    } 
+else:
+    DATABASES = {
+    'default': dj_database_url.parse(
+        config('DATABASE_URL'),
+        ssl_require=True
+    )
 }
 
 
@@ -152,18 +155,22 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
 
-CLOUDINARY_STORAGE = {
+if DEBUG:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+else:
+    CLOUDINARY_STORAGE = {
     'CLOUD_NAME': config('CLOUD_NAME'),
     'API_KEY': config('API_KEY'),
     'API_SECRET': config('API_SECRET'),
-}
+    }
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 STORAGES = {
     "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+        "BACKEND": DEFAULT_FILE_STORAGE,
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
