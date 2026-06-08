@@ -4,6 +4,7 @@ from datetime import timedelta
 import cloudinary
 import cloudinary.api
 import cloudinary.uploader
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -18,7 +19,9 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+]
 
 
 # Application definition
@@ -80,14 +83,15 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
-    'default': {
-        'ENGINE': config('ENGINE'),
-        'NAME': config('NAME'),
-        'USER': config('USER'),
-        'PASSWORD': config('PASSWORD'),
-        'HOST': config('HOST'),
-        'PORT': config('PORT'),
-    }
+    # 'default': {
+    #     'ENGINE': config('ENGINE'),
+    #     'NAME': config('NAME'),
+    #     'USER': config('USER'),
+    #     'PASSWORD': config('PASSWORD'),
+    #     'HOST': config('HOST'),
+    #     'PORT': config('PORT'),
+    # }
+    'default': dj_database_url.parse(config('DATABASE_URL'))
 }
 
 
